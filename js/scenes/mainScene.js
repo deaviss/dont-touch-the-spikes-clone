@@ -1,9 +1,9 @@
 export class mainScene extends Phaser.Scene {
-  constructor () {
-    super({ key: 'mainScene' })
+	constructor() {
+		super({ key: 'mainScene' })
 	}
 
-	preload(){
+	preload() {
 		this.load.image('wall', 'img/wall.png')
 
 		this.load.image('button', 'img/button.png')
@@ -25,14 +25,14 @@ export class mainScene extends Phaser.Scene {
 
 		this.cameras.main.setBackgroundColor('#eaeaea')
 	}
-	
-	create() { 
+
+	create() {
 		var shapes = this.cache.json.get('shapes')
 		this.shapes = shapes;
 		this.spikes_top_bottom = [];
 		this.currentSpikes = [];
 		this.trails = [];
-		
+
 		this.createMap();
 
 		this.collectSound = this.sound.add('collect');
@@ -45,19 +45,19 @@ export class mainScene extends Phaser.Scene {
 			color: '#a6a6a6',
 			stroke: '#333',
 			strokeThickness: 9
-		}).setOrigin(0.5,0.5).setAlpha(0.3)
+		}).setOrigin(0.5, 0.5).setAlpha(0.3)
 
-		
+
 		this.gameConfig = {
 			debug: true
 		}
 		// player's attributes
 		this.player = {
-			bird: this.matter.add.image(this.game.config.width / 2, 360, 'sheet', 'bird', {shape: shapes.bird}).setIgnoreGravity(true).setFrictionAir(0.8),
+			bird: this.matter.add.image(this.game.config.width / 2, 360, 'sheet', 'bird', { shape: shapes.bird }).setIgnoreGravity(true).setFrictionAir(0.8),
 			friction: 1.4,
 			velocityX: 19,
 			velocityY: 8,
-			velocityXMax: 24, 
+			velocityXMax: 24,
 			jumpPower: 30,
 			alive: true,
 			gold: this.canLoad() ? parseInt(localStorage.getItem('gold')) : 0,
@@ -91,43 +91,41 @@ export class mainScene extends Phaser.Scene {
 
 		this.createUI();
 
-		this.zone = this.add.zone(0,0, 1000, 1000).setInteractive().setOrigin(0,0);
+		this.zone = this.add.zone(0, 0, 1000, 1000).setInteractive().setOrigin(0, 0);
 
 		this.createMenuButtons();
-		
 
 
 
-		this.zone.on('pointerdown', ()=>{
-			if(!this.world.started){ 
+
+		this.zone.on('pointerdown', () => {
+			if (!this.world.started) {
 				this.startGame();
 				this.onPlayerJump();
-			}else {
+			} else {
 				this.onPlayerJump();
 			}
 		}, this)
 
-		if(this.gameConfig.debug){
+		if (this.gameConfig.debug) {
 			window.player = this.player;
 		}
 
-		
+
 		// collisions
 		this.matter.world.on('collisionstart', function (event, bodyA, bodyB) {
 			this.checkCollisions(bodyA, bodyB)
 		}, this);
 
-		// ads
-		this.createAdButton();
 
 	}
 
-	onPlayerJump(){
+	onPlayerJump() {
 		this.player.velocityY = -this.player.jumpPower;
 		this.addTrail();
 	}
 
-	addTrail(){
+	addTrail() {
 		var t = this;
 		this.trails = [];
 		var xoffset = 11;
@@ -161,65 +159,32 @@ export class mainScene extends Phaser.Scene {
 		}, 200);
 	}
 
-	createAdButton() {
-		var t = this;
-		document.addEventListener('admob.rewardvideo.events.LOAD', function(event) {
-			if(admob){
-				console.log('ad loaded!')
-				setTimeout(() => {
-					t.adButton = t.add.rectangle(150,150,100,200, 0x00ff00).setInteractive();
-					t.adButton.on('pointerdown', function(){
-						admob.rewardvideo.show();
-					})
-				}, 9000);
-			}
-		})
-		document.addEventListener('admob.rewardvideo.events.LOAD_FAIL', function (event) {
-			console.log(`couldnt load ad video. retrying in 2 minutes`);
-			setTimeout(() => {
-				admob.rewardvideo.prepare();
-			}, 120000);
-		});
-		document.addEventListener('admob.rewardvideo.events.CLOSE', function(event) {
-			if(t.adButton){
-				t.adButton.destroy();
-			}
-			admob.rewardvideo.prepare()
-		})
-		document.addEventListener('admob.rewardvideo.events.REWARD', function(event) {
-			var amount = event.rewardAmount;
-			var type = event.rewardType;
-			t.player.gold += amount;
-			t.goldText.text = `Gold ${t.player.gold}`
-			t.saveGame();
-		})
-	}
 
-	createMenuButtons(){
+	createMenuButtons() {
 		this.menuButtons = this.add.group();
 
 		this.shopButton = this.add.sprite(this.game.config.width / 2, 510, 'shopButton').setInteractive().setScale(0.7).setAlpha(0.8);
 
-		this.shopButton.on('pointerdown', function(){
+		this.shopButton.on('pointerdown', function () {
 			this.scene.pause()
 			// this.scene.launch('shopScene')
 			this.scene.switch('shopScene');
-		},this)
+		}, this)
 
 		this.menuButtons.add(this.shopButton);
 	}
 
-	checkCollisions(bodyA, bodyB){
-		if((bodyA.parent.label == 'bird' || bodyB.parent.label == 'bird')){
-			if(bodyA.parent.label == 'wall' || bodyB.parent.label == 'wall'){
+	checkCollisions(bodyA, bodyB) {
+		if ((bodyA.parent.label == 'bird' || bodyB.parent.label == 'bird')) {
+			if (bodyA.parent.label == 'wall' || bodyB.parent.label == 'wall') {
 				this.deleteSpikes();
 				this.world.points += 1;
 
-				if(this.world.pickedGold == true){
+				if (this.world.pickedGold == true) {
 					this.pickedGold();
 				}
 
-				if(this.world.side == 'right'){
+				if (this.world.side == 'right') {
 					this.player.bird.setAngle(0);
 					this.player.bird.scaleX = -1;
 					this.world.side = 'left'
@@ -232,7 +197,7 @@ export class mainScene extends Phaser.Scene {
 					this.addSpikes()
 				}
 			}
-			if(bodyA.parent.label == 'spike' || bodyB.parent.label == 'spike'){
+			if (bodyA.parent.label == 'spike' || bodyB.parent.label == 'spike') {
 				console.log('touched the spike!')
 				this.cameras.main.shake(100, 0.01, false)
 				this.gameOver()
@@ -240,15 +205,15 @@ export class mainScene extends Phaser.Scene {
 			// if(bodyA.parent.label == 'gold' || bodyB.parent.label == 'gold'){
 			// 	this.gold.destroy();
 			// }
-			
+
 			this.pointsText.text = this.world.points;
 		}
 	}
 
-	update(){
+	update() {
 		this.player.bird.setAngle(0)
-		if(this.gold){
-			if(this.checkOverlap(this.player.bird, this.gold) && !this.world.pickedGold){
+		if (this.gold) {
+			if (this.checkOverlap(this.player.bird, this.gold) && !this.world.pickedGold) {
 				this.collectSound.play();
 				this.gold.setPosition(-100, -100);
 				this.gold.tween.stop();
@@ -256,15 +221,15 @@ export class mainScene extends Phaser.Scene {
 				this.player.gold++;
 			}
 		}
-		if(this.world.started && this.player.alive){
-			
+		if (this.world.started && this.player.alive) {
+
 			var player = this.player;
 			var velX = player.velocityX + (this.world.points / 3)
-			if(velX >= player.velocityXMax)
+			if (velX >= player.velocityXMax)
 				velX = player.velocityXMax
 			player.bird.setVelocity(this.world.side == 'right' ? velX : - velX, player.velocityY);
-			
-			if(player.velocityY <= 77)
+
+			if (player.velocityY <= 77)
 				player.velocityY += player.friction
 		}
 		// this.currentSpikes.forEach(spike => {
@@ -287,53 +252,53 @@ export class mainScene extends Phaser.Scene {
 		})
 	}
 
-	createMap(){
+	createMap() {
 		var _this = this;
-		for(var i = 0; i < 10; i++){
+		for (var i = 0; i < 10; i++) {
 			var y1 = -5;
 			var y2 = this.game.config.height - 195;
 			var gap = i * 44.5;
-			var spikeTop = this.matter.add.image(70 + gap, y1, 'sheet', 'spike', {shape: _this.shapes.spike}).setIgnoreGravity(true)
+			var spikeTop = this.matter.add.image(70 + gap, y1, 'sheet', 'spike', { shape: _this.shapes.spike }).setIgnoreGravity(true)
 			spikeTop.setAngle(180);
-			var spikeBot = this.matter.add.image(70 + gap, y2, 'sheet', 'spike', {shape: _this.shapes.spike}).setIgnoreGravity(true)
-			this.spikes_top_bottom.push(spikeTop,spikeBot)
+			var spikeBot = this.matter.add.image(70 + gap, y2, 'sheet', 'spike', { shape: _this.shapes.spike }).setIgnoreGravity(true)
+			this.spikes_top_bottom.push(spikeTop, spikeBot)
 		}
-		this.leftWall = this.matter.add.image(24, 480, 'sheet', 'wall', {shape: _this.shapes.wall})
-		this.rightWall = this.matter.add.image(540 - 24, 480, 'sheet', 'wall', {shape: _this.shapes.wall})
-		this.add.rectangle(0, this.game.config.height - 200, 900, 400, 0x7f7f7f).setOrigin(0,0);
+		this.leftWall = this.matter.add.image(24, 480, 'sheet', 'wall', { shape: _this.shapes.wall })
+		this.rightWall = this.matter.add.image(540 - 24, 480, 'sheet', 'wall', { shape: _this.shapes.wall })
+		this.add.rectangle(0, this.game.config.height - 200, 900, 400, 0x7f7f7f).setOrigin(0, 0);
 	}
 
-	createUI(){
+	createUI() {
 		this.texts = this.add.group();
-		
+
 		this.highScoreText = this.add.text(this.game.config.width / 2, this.game.config.height / 2 + 170, `Highscore ${this.player.highScore}`, {
 			fontSize: '34px',
 			color: '#a6a6a6',
 			stroke: '#333',
 			strokeThickness: 2
-		}).setOrigin(0.5,0.5)
+		}).setOrigin(0.5, 0.5)
 		this.goldText = this.add.text(this.game.config.width / 2, this.game.config.height / 2 + 220, `Gold ${this.player.gold}`, {
 			fontSize: '34px',
 			color: '#a6a6a6',
 			stroke: '#333',
 			strokeThickness: 2
-		}).setOrigin(0.5,0.5)
+		}).setOrigin(0.5, 0.5)
 
 		this.texts.add(this.highScoreText);
 		this.texts.add(this.goldText);
 
 	}
 
-	startGame(){
+	startGame() {
 		var _this = this;
-		if(!this.world.started){
+		if (!this.world.started) {
 			this.player.tween.stop();
 			this.texts.toggleVisible();
 			this.menuButtons.toggleVisible();
 			this.player.alive = true;
-			
 
-			var x = -100; 
+
+			var x = -100;
 			var y = -100;
 
 
@@ -359,10 +324,10 @@ export class mainScene extends Phaser.Scene {
 		var baseY = 30;
 		var baseX = side == 'right' ? this.game.config.width - 9 : 9;
 
-		
+
 
 		var gap = poz * 69
-		var newSpike = this.matter.add.image(baseX, baseY + gap, 'sheet', 'spike', {shape: _this.shapes.spike})
+		var newSpike = this.matter.add.image(baseX, baseY + gap, 'sheet', 'spike', { shape: _this.shapes.spike })
 		newSpike.setAngle(side == 'right' ? -90 : 90);
 		newSpike.setScale(0.85)
 		newSpike.POZ = poz;
@@ -380,34 +345,34 @@ export class mainScene extends Phaser.Scene {
 		this.currentSpikes.push(newSpike)
 	}
 
-	addSpikes(){
+	addSpikes() {
 		var i = 0;
-		var rnd = Phaser.Math.RND.between(this.world.points / 5,this.world.points / 3);
+		var rnd = Phaser.Math.RND.between(this.world.points / 5, this.world.points / 3);
 		// if spikes are not moving then: amount=3 + random; amount = 7;
 		// if spikes are moving then: amount=4 + random; amount = 9;
 		var amount = 3 + rnd;
-		if(amount > 7) amount = 7;
-		while (i < amount){
-			var poz = Phaser.Math.RND.between(1,9);
-			
+		if (amount > 7) amount = 7;
+		while (i < amount) {
+			var poz = Phaser.Math.RND.between(1, 9);
+
 			var canAdd = true;
-			if(this.currentSpikes.length > 0){
+			if (this.currentSpikes.length > 0) {
 				this.currentSpikes.forEach(spike => {
-					if(poz == spike.POZ){
+					if (poz == spike.POZ) {
 						canAdd = false;
 					}
 				});
-			} else{
+			} else {
 				canAdd = true;
 			}
-			if(canAdd){
+			if (canAdd) {
 				this.createNewSpike(poz);
 				i++;
 			}
 		}
 	}
 
-	deleteSpikes(){
+	deleteSpikes() {
 		this.currentSpikes.forEach(spike => {
 			spike.tween.stop();
 			spike.destroy();
@@ -416,29 +381,29 @@ export class mainScene extends Phaser.Scene {
 	}
 
 	checkOverlap(spriteA, spriteB) {
-    var boundsA = spriteA.getBounds();
-    var boundsB = spriteB.getBounds();
+		var boundsA = spriteA.getBounds();
+		var boundsB = spriteB.getBounds();
 
-    return Phaser.Geom.Intersects.RectangleToRectangle(boundsA, boundsB);
-	}	
+		return Phaser.Geom.Intersects.RectangleToRectangle(boundsA, boundsB);
+	}
 
-	gameOver(){
+	gameOver() {
 		this.texts.toggleVisible();
 
 		this.deathSound1.play();
 		this.deathSound2.play();
-		
+
 		this.menuButtons.toggleVisible();
 
 		this.world.started = false;
 		this.world.pickedGold = false
-		if(this.player.highScore < this.world.points)
+		if (this.player.highScore < this.world.points)
 			this.player.highScore = this.world.points
 		this.player.bird.setPosition(this.game.config.width / 2, this.game.config.height / 2);
 		this.player.bird.setAngle(0)
 
 		this.deleteSpikes();
-		if(this.gold){
+		if (this.gold) {
 			this.gold.setPosition(-100, -100);
 		}
 		this.world.points = 0;
@@ -446,7 +411,7 @@ export class mainScene extends Phaser.Scene {
 		this.player.bird.scaleX = 1;
 		this.cameras.main.setBackgroundColor('#eaeaea')
 		this.highScoreText.text = `Highscore ${this.player.highScore}`
-		this.goldText.text  = `Gold ${this.player.gold}`
+		this.goldText.text = `Gold ${this.player.gold}`
 		this.player.tween.play();
 		this.saveGame();
 	}
@@ -489,23 +454,23 @@ które jest odczytywane w scenie sklepu
 
 
 function numFormat(num, digits = 2) {
-  var si = [
-    { value: 1, symbol: "" },
-    { value: 1E3, symbol: "k" },
-    { value: 1E6, symbol: "M" },
-    { value: 1E9, symbol: "G" },
-    { value: 1E12, symbol: "T" },
-    { value: 1E15, symbol: "P" },
-    { value: 1E18, symbol: "E" }
-  ];
-  var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  var i;
-  for (i = si.length - 1; i > 0; i--) {
-    if (num >= si[i].value) {
-      break;
-    }
-  }
-  return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+	var si = [
+		{ value: 1, symbol: "" },
+		{ value: 1E3, symbol: "k" },
+		{ value: 1E6, symbol: "M" },
+		{ value: 1E9, symbol: "G" },
+		{ value: 1E12, symbol: "T" },
+		{ value: 1E15, symbol: "P" },
+		{ value: 1E18, symbol: "E" }
+	];
+	var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+	var i;
+	for (i = si.length - 1; i > 0; i--) {
+		if (num >= si[i].value) {
+			break;
+		}
+	}
+	return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
 }
 
 

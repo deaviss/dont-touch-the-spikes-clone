@@ -1,39 +1,35 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
-        <meta http-equiv="Content-Security-Policy" content="script-src 'self' http://xxxx 'unsafe-inline' 'unsafe-eval'; ">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-        <link rel="stylesheet" type="text/css" href="css/index.css">
-        <link rel="shortcut icon" type="image/png" href="./img/birds/bird.png"/>
-        <script type="text/javascript" src="js/phaser.min.js"></script>
 
-        <title>Don't touch the spikes fan-made clone</title>
-        <style>
-        *{
-            margin:0px;
-            padding:0px;
+<head>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' http://xxxx 'unsafe-inline' 'unsafe-eval'; ">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="shortcut icon" type="image/png" href="./img/birds/bird.png" />
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+
+    <title>Don't touch the spikes fan-made clone</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
             overflow: hidden;
         }
-        canvas{
+
+        canvas {
             width: 100%;
-            height:100%;
+            height: 100%;
             border: 1px solid black;
             background-color: #7f7f7f;
-        }</style>
-    </head>
-    <body style="background: #7f7f7f">
-        <script type="module" src="js/index.js"></script>
-    </body>
+        }
+    </style>
+</head>
+
+<body style="background: #7f7f7f">
+    <script type="module" src="js/index.js"></script>
+</body>
+
 </html>
