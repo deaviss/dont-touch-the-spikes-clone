@@ -130,7 +130,6 @@ export class mainScene extends Phaser.Scene {
 		this.trails = [];
 		var xoffset = 11;
 		var yoffset = 16;
-		console.log(this.player.currentBird.name)
 		var sprite = `${this.player.currentBird.name}_trail`;
 		var t1 = t.add.sprite(t.world.side == 'right' ? t.player.bird.x - xoffset : t.player.bird.x + xoffset, t.player.bird.y + yoffset, sprite).setScale(0.6);
 		var tween = t.tweens.add({
